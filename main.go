@@ -8,6 +8,7 @@ import (
 	"log"
 	"net/http"
 	"net/url"
+	"os"
 	"tdameritrade-alerter/chain"
 	"tdameritrade-alerter/config"
 )
@@ -19,7 +20,12 @@ const (
 
 func main() {
 
-	cfg, err := LoadConfig(".")
+	// executable is the first arg
+	if len(os.Args) == 1 {
+		log.Fatal("Please specify the path to the app config file")
+	}
+
+	cfg, err := LoadConfig(os.Args[1])
 	if err != nil {
 		log.Fatalf("Failed to load the config " + err.Error())
 	}
@@ -70,7 +76,8 @@ func main() {
 
 func LoadConfig(path string) (c config.Config, err error) {
 	viper.AddConfigPath(path)
-	viper.SetConfigFile("app.yaml")
+	viper.SetConfigName("app")
+	//viper.SetConfigType("yaml")
 	err = viper.ReadInConfig()
 	if err != nil {
 		return
