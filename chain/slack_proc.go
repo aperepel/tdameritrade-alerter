@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"github.com/slack-go/slack"
 	"strings"
-	"tda-watch/config"
+	"tdameritrade-alerter/config"
 )
 
 type SlackProcessor struct {

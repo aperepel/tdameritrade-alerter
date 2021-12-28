@@ -8,8 +8,8 @@ import (
 	"log"
 	"net/http"
 	"net/url"
-	"tda-watch/chain"
-	"tda-watch/config"
+	"tdameritrade-alerter/chain"
+	"tdameritrade-alerter/config"
 )
 
 const (

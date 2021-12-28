@@ -3,7 +3,7 @@ package chain
 import (
 	"fmt"
 	"strings"
-	"tda-watch/config"
+	"tdameritrade-alerter/config"
 )
 
 type StdOutProcessor struct {

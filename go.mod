@@ -1,4 +1,4 @@
-module tda-watch
+module tdameritrade-alerter
 
 go 1.17
 
