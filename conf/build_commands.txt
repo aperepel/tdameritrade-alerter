@@ -1,0 +1,9 @@
+podman build -t aperepel/tda-alerter:latest \
+             -t registry.digitalocean.com/agrande-default-cr/aperepel/tda-alerter:latest \
+             .
+
+podman push registry.digitalocean.com/agrande-default-cr/aperepel/tda-alerter:latest
+
+podman tag <image_id> docker.io/aperepel/tda-alerter:latest
+
+podman push docker.io/aperepel/tda-alerter:latest
