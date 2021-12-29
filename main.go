@@ -75,9 +75,13 @@ func main() {
 }
 
 func LoadConfig(path string) (c config.Config, err error) {
+	// override couple values from env if configured
+	viper.AutomaticEnv()
+	viper.BindEnv("ApiKey", "API_KEY")
+	viper.BindEnv("SlackWebhookUrl", "SLACK_WEBHOOK_URL")
 	viper.AddConfigPath(path)
 	viper.SetConfigName("app")
-	//viper.SetConfigType("yaml")
+	viper.SetConfigType("yaml")
 	err = viper.ReadInConfig()
 	if err != nil {
 		return

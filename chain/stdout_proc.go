@@ -1,6 +1,7 @@
 package chain
 
 import (
+	"errors"
 	"fmt"
 	"strings"
 	"tdameritrade-alerter/config"
@@ -26,7 +27,16 @@ func (s *StdOutProcessor) Analyze(chains *Chains) error {
 	_, _ = fmt.Fprintf(&builder, "Option strike: %s\n", requestedStrike)
 	_, _ = fmt.Fprintln(&builder)
 
-	expDateMap := chains.CallExpDateMap
+	var expDateMap ExpDateMap
+	switch s.Config.PutCall {
+	case "PUT":
+		expDateMap = chains.PutExpDateMap
+	case "CALL":
+		expDateMap = chains.CallExpDateMap
+	default:
+		return errors.New("only PUT & CALL single chains are supported")
+	}
+
 	for expiration, strikeMap := range expDateMap {
 		// response value will have e.g. '2021-12-31:5' drop everything after the ':'
 		cleansedExp := strings.Split(expiration, ":")[0]

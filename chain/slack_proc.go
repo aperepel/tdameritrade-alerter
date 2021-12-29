@@ -1,6 +1,7 @@
 package chain
 
 import (
+	"errors"
 	"fmt"
 	"github.com/slack-go/slack"
 	"strings"
@@ -53,7 +54,16 @@ func (s *SlackProcessor) Analyze(optionChains *Chains) error {
 		},
 	}
 
-	expDateMap := optionChains.CallExpDateMap
+	var expDateMap ExpDateMap
+	switch s.Config.PutCall {
+	case "PUT":
+		expDateMap = optionChains.PutExpDateMap
+	case "CALL":
+		expDateMap = optionChains.CallExpDateMap
+	default:
+		return errors.New("only PUT & CALL single chains are supported")
+	}
+
 	for expiration, strikeMap := range expDateMap {
 		// response value will have e.g. '2021-12-31:5' drop everything after the ':'
 		cleansedExp := strings.Split(expiration, ":")[0]
