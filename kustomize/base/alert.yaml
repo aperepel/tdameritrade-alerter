@@ -1,0 +1,5 @@
+symbol: SPY
+strike: 500
+expiration: 2022-01-21
+# allowed values are PUT, CALL, ALL
+putCall: CALL

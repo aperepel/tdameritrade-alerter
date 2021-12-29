@@ -2,3 +2,7 @@
 /.idea/
 /conf/alert.yaml
 /conf/.secrets.yaml
+/conf/alerter-pod.yaml
+/conf/configmap.yaml
+/conf/market-cj.yaml
+/conf/secrets.yaml

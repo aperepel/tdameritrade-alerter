@@ -1,0 +1,12 @@
+resources:
+  - cronjob.yaml
+commonLabels:
+  app: tda-alerter
+configMapGenerator:
+  - name: tda-alerter-cm
+    files:
+      - alert.yaml
+secretGenerator:
+  - name: tda-alerter-secrets
+    files:
+      - .secrets.yaml
