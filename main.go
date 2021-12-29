@@ -27,7 +27,7 @@ func main() {
 
 	cfg, err := LoadConfig(os.Args[1])
 	if err != nil {
-		log.Fatalf("Failed to load the config " + err.Error())
+		log.Fatalf("Failed to load the config: %q", err)
 	}
 
 	chainsUrl := fmt.Sprintf(
@@ -77,12 +77,19 @@ func main() {
 func LoadConfig(path string) (c config.Config, err error) {
 	// override couple values from env if configured
 	viper.AutomaticEnv()
-	viper.BindEnv("ApiKey", "API_KEY")
-	viper.BindEnv("SlackWebhookUrl", "SLACK_WEBHOOK_URL")
+	_ = viper.BindEnv("ApiKey", "API_KEY")
+	_ = viper.BindEnv("SlackWebhookUrl", "SLACK_WEBHOOK_URL")
 	viper.AddConfigPath(path)
-	viper.SetConfigName("app")
+	viper.SetConfigName("alert")
 	viper.SetConfigType("yaml")
 	err = viper.ReadInConfig()
+	if err != nil {
+		return
+	}
+
+	// merge in the secrets config
+	viper.SetConfigName(".secrets")
+	err = viper.MergeInConfig()
 	if err != nil {
 		return
 	}

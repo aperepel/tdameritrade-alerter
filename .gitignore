@@ -1,3 +1,4 @@
 /bin/
 /.idea/
-/conf/app.yaml
+/conf/alert.yaml
+/conf/.secrets.yaml

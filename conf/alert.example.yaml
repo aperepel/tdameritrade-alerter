@@ -1,0 +1,8 @@
+#
+# Copy and rename this file to 'alert.yaml'
+#
+symbol: SPY
+strike: 500
+# allowed values are PUT, CALL
+expiration: 2022-01-21
+putCall: CALL
