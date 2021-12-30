@@ -1,0 +1,10 @@
+resources:
+  - ../../base
+nameSuffix: -crm-280-call
+commonLabels:
+  symbol: crm-280-call
+configMapGenerator:
+  - name: tda-alerter-cm
+    behavior: replace
+    files:
+      - alert.yaml

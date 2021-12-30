@@ -1,0 +1,10 @@
+resources:
+  - ../../base
+nameSuffix: -tsla-1020-put
+commonLabels:
+  symbol: tsla-1020-put
+configMapGenerator:
+  - name: tda-alerter-cm
+    behavior: replace
+    files:
+      - alert.yaml

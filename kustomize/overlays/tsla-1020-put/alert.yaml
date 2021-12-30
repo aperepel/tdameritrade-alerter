@@ -1,0 +1,5 @@
+symbol: TSLA
+strike: 1020
+expiration: 2022-01-21
+# allowed values are PUT, CALL, ALL
+putCall: PUT
