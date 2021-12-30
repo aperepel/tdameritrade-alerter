@@ -1,14 +1,14 @@
 apiVersion: batch/v1
 kind: CronJob
 metadata:
-#  namespace: tda-alerter
-  name: tsla-alert-job
+  #  namespace: tda-alerter
+  name: tda-alert-job
   labels:
     app: tda-alerter
 spec:
   jobTemplate:
     metadata:
-      name: tsla-alert-job
+      name: tda-alert-job
       labels:
         app: tda-alerter
     spec:
@@ -22,21 +22,19 @@ spec:
             runAsUser: 1001
             runAsGroup: 1001
           volumes:
-            - name: alert-config-volume
-              configMap:
-                name: tsla-alerter-cm
-            - name: alerter-secrets-volume
-              secret:
-                secretName: tda-alerter-secrets
+            - name: combined-volume
+              projected:
+                sources:
+                  - secret:
+                      name: tda-alerter-secrets
+                  - configMap:
+                      name: tda-alerter-cm
           containers:
             - image: registry.digitalocean.com/agrande-default-cr/aperepel/tda-alerter:latest
               name: tda-alerter
               volumeMounts:
                 - mountPath: /app/conf
-                  name: alert-config-volume
-                - mountPath: /app/conf
-                  name: alerter-secrets-volume
-                  subPath: .secrets.yaml
+                  name: combined-volume
           restartPolicy: OnFailure
   # Every 15 minutes, starting at 30 minutes past the hour,
   # at 06:00 AM through 12:59 PM and 01:00 PM, Monday through Friday
