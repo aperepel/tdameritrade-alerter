@@ -26,7 +26,8 @@ RUN go mod download
 RUN go mod tidy
 RUN go mod verify
 
-RUN go build -o /app/
+# strip debug data from the final build
+RUN go build -ldflags="-s -w" -o /app/
 
 RUN mkdir -p /app/conf && touch /app/conf/.keep && chown -R appuser:appuser /app
 
