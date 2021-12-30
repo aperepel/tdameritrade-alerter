@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"github.com/spf13/viper"
@@ -54,6 +55,13 @@ func main() {
 		log.Fatal("API call didn't succeed: " + string(respBytes))
 	}
 	chains := chain.Chains{}
+
+	var prettyJson bytes.Buffer
+	err = json.Indent(&prettyJson, respBytes, "", "  ")
+	if err != nil {
+		log.Fatal("failed to format response json %v", err.Error())
+	}
+	fmt.Printf("Server response:\n%v\n", prettyJson.String())
 
 	err = json.Unmarshal(respBytes, &chains)
 	if err != nil {

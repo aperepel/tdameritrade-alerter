@@ -21,6 +21,8 @@ func (s *StdOutProcessor) Analyze(chains *Chains) error {
 
 	builder := strings.Builder{}
 
+	_, _ = fmt.Fprintf(&builder, "\nSummary:\n")
+	_, _ = fmt.Fprintf(&builder, "%v\n", strings.Repeat("-", 20))
 	_, _ = fmt.Fprintf(&builder, "Instrument: %s\n", chains.Symbol)
 	_, _ = fmt.Fprintf(&builder, "Underlying price: %.2f\n", chains.UnderlyingPrice)
 	_, _ = fmt.Fprintf(&builder, "Delayed: %t\n", chains.IsDelayed)
