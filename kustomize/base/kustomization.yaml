@@ -10,3 +10,6 @@ secretGenerator:
   - name: tda-alerter-secrets
     files:
       - .secrets.yaml
+images:
+  - name: aperepel/tda-alerter
+    newName: registry.digitalocean.com/agrande-default-cr/aperepel/tda-alerter

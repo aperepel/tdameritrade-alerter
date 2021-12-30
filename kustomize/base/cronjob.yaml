@@ -30,7 +30,7 @@ spec:
                   - configMap:
                       name: tda-alerter-cm
           containers:
-            - image: registry.digitalocean.com/agrande-default-cr/aperepel/tda-alerter:latest
+            - image: aperepel/tda-alerter:latest
               name: tda-alerter
               volumeMounts:
                 - mountPath: /app/conf
