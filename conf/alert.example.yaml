@@ -3,6 +3,6 @@
 #
 symbol: SPY
 strike: 500
-# allowed values are PUT, CALL
 expiration: 2022-01-21
+# allowed values are PUT, CALL
 putCall: CALL
