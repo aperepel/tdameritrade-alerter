@@ -22,7 +22,7 @@ func (s *SlackProcessor) Analyze(optionChains *Chains) error {
 		return fmt.Errorf("slack webhook URL not configured")
 	}
 
-	requestedStrike := fmt.Sprintf("%.1f", s.Config.Strike)
+	requestedStrike := s.Config.StrikeFormatted()
 
 	builder := strings.Builder{}
 	fmt.Fprintf(&builder, "*%s* %s %s",
