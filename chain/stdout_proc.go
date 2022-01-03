@@ -3,8 +3,10 @@ package chain
 import (
 	"errors"
 	"fmt"
+	"github.com/rs/zerolog/log"
 	"strings"
 	"tdameritrade-alerter/config"
+	"tdameritrade-alerter/util"
 )
 
 type StdOutProcessor struct {
@@ -59,7 +61,12 @@ func (s *StdOutProcessor) Analyze(chains *Chains) error {
 	}
 
 	output := builder.String()
-	fmt.Println(output)
+
+	if util.IsStandalone() {
+		fmt.Println(output)
+	} else {
+		log.Info().Msg(output)
+	}
 
 	return nil
 }

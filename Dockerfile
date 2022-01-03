@@ -18,6 +18,7 @@ RUN adduser \
 WORKDIR $GOPATH/src/app/
 COPY ./chain ./chain
 COPY ./config ./config
+COPY ./util ./util
 COPY ./go.* .
 COPY main.go .
 

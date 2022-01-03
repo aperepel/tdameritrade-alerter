@@ -29,12 +29,20 @@ spec:
                       name: tda-alerter-secrets
                   - configMap:
                       name: tda-alerter-cm
+            - name: podinfo-volume
+              downwardAPI:
+                items:
+                  - path: "podname"
+                    fieldRef:
+                      fieldPath: metadata.name
           containers:
             - image: aperepel/tda-alerter:latest
               name: tda-alerter
               volumeMounts:
                 - mountPath: /app/conf
                   name: combined-volume
+                - mountPath: /etc/podinfo
+                  name: podinfo-volume
           restartPolicy: OnFailure
   # Every 15 minutes, starting at 30 minutes past the hour,
   # at 06:00 AM through 12:59 PM and 01:00 PM, Monday through Friday

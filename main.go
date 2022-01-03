@@ -4,14 +4,13 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"github.com/spf13/viper"
+	"github.com/rs/zerolog/log"
 	"io/ioutil"
-	"log"
 	"net/http"
 	"net/url"
 	"os"
 	"tdameritrade-alerter/chain"
-	"tdameritrade-alerter/config"
+	"tdameritrade-alerter/util"
 )
 
 const (
@@ -21,14 +20,20 @@ const (
 
 func main() {
 
-	// executable is the first arg
-	if len(os.Args) == 1 {
-		log.Fatal("Please specify the path to the app config file")
+	if util.IsStandalone() {
+		fmt.Println("Running standalone")
+	} else {
+		log.Info().Msg("Running in a container")
 	}
 
-	cfg, err := LoadConfig(os.Args[1])
+	// executable is the first arg
+	if len(os.Args) == 1 {
+		log.Fatal().Msg("Please specify the dir with the app config file")
+	}
+
+	cfg, err := util.LoadConfig(os.Args[1])
 	if err != nil {
-		log.Fatalf("Failed to load the config: %q", err)
+		log.Fatal().Err(err).Msg("Failed to load the config")
 	}
 
 	chainsUrl := fmt.Sprintf(
@@ -43,66 +48,41 @@ func main() {
 
 	resp, err := http.Get(chainsUrl)
 	if err != nil {
-		log.Fatal("Failed to invoke the API", err)
+		log.Fatal().Err(err).Msg("Failed to invoke the API")
 	}
 
 	defer resp.Body.Close()
 	respBytes, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
-		log.Fatal("Failed to read response", err)
+		log.Fatal().Err(err).Msg("Failed to read response")
 	}
 	if resp.StatusCode != 200 {
-		log.Fatal("API call didn't succeed: " + string(respBytes))
+		log.Fatal().Err(err).Msgf("API call didn't succeed: %q", string(respBytes))
 	}
 	chains := chain.Chains{}
 
 	var prettyJson bytes.Buffer
 	err = json.Indent(&prettyJson, respBytes, "", "  ")
 	if err != nil {
-		log.Fatal("failed to format response json %v", err.Error())
+		log.Fatal().Err(err).Msg("failed to format response json")
 	}
-	fmt.Printf("Server response:\n%v\n", prettyJson.String())
+	log.Debug().Msg(prettyJson.String())
 
 	err = json.Unmarshal(respBytes, &chains)
 	if err != nil {
-		log.Fatal("Failed to parse the json response", err)
+		log.Fatal().Err(err).Msg("Failed to parse the json response")
 	}
 
 	stdOutProcessor := chain.StdOutProcessor{cfg}
 	_ = stdOutProcessor.Analyze(&chains)
 
 	if cfg.SlackWebhookUrl == "" {
-		log.Println("Slack webhook URL not configured")
+		log.Info().Msg("Slack webhook URL not configured")
 	} else {
 		slackProcessor := chain.SlackProcessor{cfg}
 		err := slackProcessor.Analyze(&chains)
 		if err != nil {
-			log.Fatalf("Failed to notify via Slack %v", err.Error())
+			log.Fatal().Err(err).Msg("Failed to notify via Slack")
 		}
 	}
-}
-
-func LoadConfig(path string) (c config.Config, err error) {
-	// override couple values from env if configured
-	viper.AutomaticEnv()
-	_ = viper.BindEnv("ApiKey", "API_KEY")
-	_ = viper.BindEnv("SlackWebhookUrl", "SLACK_WEBHOOK_URL")
-	viper.AddConfigPath(path)
-	viper.SetConfigName("alert")
-	viper.SetConfigType("yaml")
-	err = viper.ReadInConfig()
-	if err != nil {
-		return
-	}
-
-	// merge in the secrets config
-	viper.SetConfigName(".secrets")
-	err = viper.MergeInConfig()
-	if err != nil {
-		return
-	}
-
-	err = viper.Unmarshal(&c)
-
-	return
 }
