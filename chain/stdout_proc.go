@@ -3,6 +3,7 @@ package chain
 import (
 	"errors"
 	"fmt"
+	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
 	"strings"
 	"tdameritrade-alerter/config"
@@ -41,6 +42,9 @@ func (s *StdOutProcessor) Analyze(chains *Chains) error {
 		return errors.New("only PUT & CALL single chains are supported")
 	}
 
+	// just a data holder for a log message down below
+	var opt *ExpDateOption
+
 	for expiration, strikeMap := range expDateMap {
 		// response value will have e.g. '2021-12-31:5' drop everything after the ':'
 		cleansedExp := strings.Split(expiration, ":")[0]
@@ -52,10 +56,12 @@ func (s *StdOutProcessor) Analyze(chains *Chains) error {
 			//fmt.Printf("Strike map: %s\n", strikeMap)
 			// uses the decimals in the response
 			options := strikeMap[requestedStrike]
+			// we expect only result...
 			for _, option := range options {
 				_, _ = fmt.Fprintf(&builder, "DTE: %.d\n", option.DaysToExpiration)
 				_, _ = fmt.Fprintf(&builder, "Delta: %.2f\n", option.Delta)
 				_, _ = fmt.Fprintf(&builder, "Bid/ask: %.2f/%.2f", option.Bid, option.Ask)
+				opt = &option
 			}
 		}
 	}
@@ -65,7 +71,20 @@ func (s *StdOutProcessor) Analyze(chains *Chains) error {
 	if util.IsStandalone() {
 		fmt.Println(output)
 	} else {
-		log.Info().Msg(output)
+		details := zerolog.Dict().
+			Str("instrument", chains.Symbol).
+			Str("underlyingPrice", fmt.Sprintf("%.2f", chains.UnderlyingPrice)).
+			Bool("delayed", chains.IsDelayed).
+			Str("requestedStrike", requestedStrike)
+		if opt != nil {
+			details.Int("dte", opt.DaysToExpiration).
+				Str("delta", fmt.Sprintf("%.2f", opt.Delta)).
+				Str("bid", fmt.Sprintf("%.2f", opt.Bid)).
+				Str("ask", fmt.Sprintf("%.2f", opt.Ask)).
+				Str("expiration", requestedExpiration)
+
+		}
+		log.Info().Dict("details", details).Msg("results")
 	}
 
 	return nil

@@ -66,7 +66,7 @@ func main() {
 	if err != nil {
 		log.Fatal().Err(err).Msg("failed to format response json")
 	}
-	log.Debug().Msg(prettyJson.String())
+	//log.Debug().Msg(prettyJson.String())
 
 	err = json.Unmarshal(respBytes, &chains)
 	if err != nil {
