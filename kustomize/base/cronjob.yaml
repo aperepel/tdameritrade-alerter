@@ -50,5 +50,5 @@ spec:
   # use UTC time
   schedule: 0/30 15-21 * * MON-FRI
   failedJobsHistoryLimit: 4
-  successfulJobsHistoryLimit: 4
+  successfulJobsHistoryLimit: 1
   concurrencyPolicy: Replace
